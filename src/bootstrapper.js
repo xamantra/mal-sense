@@ -1,13 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 class Bootstrapper {
-  constructor(paths = [], name, callback) {
+  constructor(paths = [], name) {
     this._paths = paths
     this._name = name
-    this._callback = callback
-    this._version = '1.0.2'
+    this._version = '1.0.3'
   }
 
-  start() {
+  start(callback) {
     const url = window.location.href.trim().toLowerCase()
     let canStart = false
     for (let i = 0; i < this._paths.length; i++) {
@@ -18,9 +17,9 @@ class Bootstrapper {
       }
     }
 
-    if (canStart && !this._callback) {
+    if (canStart && !callback) {
       console.log(`[MAL Sense - v${this._version}] - Starting "${this._name}" ...`)
-      this._callback()
+      callback()
     }
   }
 }

@@ -570,12 +570,12 @@ function startModuleMangaRelatedEntries() {
 // eslint-disable-next-line no-unused-vars
 function startModuleRelatedEntries() {
   // eslint-disable-next-line no-undef, no-new
-  new Bootstrapper(['://myanimelist.net/anime/'], 'ModuleAnimeRelatedEntries', function () {
+  new Bootstrapper(['://myanimelist.net/anime/'], 'ModuleAnimeRelatedEntries').start(function () {
     startModuleAnimeRelatedEntries()
-  }).start()
+  })
 
   // eslint-disable-next-line no-undef, no-new
-  new Bootstrapper(['://myanimelist.net/manga/'], 'ModuleMangaRelatedEntries', function () {
+  new Bootstrapper(['://myanimelist.net/manga/'], 'ModuleMangaRelatedEntries').start(function () {
     startModuleMangaRelatedEntries()
-  }).start()
+  })
 }
