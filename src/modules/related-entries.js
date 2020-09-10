@@ -570,12 +570,14 @@ function startModuleMangaRelatedEntries() {
 // eslint-disable-next-line no-unused-vars
 function startModuleRelatedEntries() {
   // eslint-disable-next-line no-undef, no-new
-  new Bootstrapper(['://myanimelist.net/anime/'], 'ModuleAnimeRelatedEntries').start(function () {
+  const anime = new Bootstrapper(['://myanimelist.net/anime/'], 'ModuleAnimeRelatedEntries')
+  anime.start(function () {
     startModuleAnimeRelatedEntries()
   })
 
   // eslint-disable-next-line no-undef, no-new
-  new Bootstrapper(['://myanimelist.net/manga/'], 'ModuleMangaRelatedEntries').start(function () {
+  const manga = new Bootstrapper(['://myanimelist.net/manga/'], 'ModuleMangaRelatedEntries')
+  manga.start(function () {
     startModuleMangaRelatedEntries()
   })
 }

@@ -3,7 +3,7 @@ class Bootstrapper {
   constructor(paths = [], name) {
     this._paths = paths
     this._name = name
-    this._version = '1.0.3'
+    this._version = '1.0.4'
   }
 
   start(callback) {
@@ -14,6 +14,8 @@ class Bootstrapper {
       if (url.includes(path)) {
         canStart = true
         break
+      } else {
+        console.log(`Skipping bootstrap on page "${url}" for "${this._name}".`)
       }
     }
 
