@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 class MalAnimeSorter {
-  constructor() {
+  constructor(_type = 'anime') {
     this.entries = {}
     // eslint-disable-next-line no-undef
     this.http = new Http()
@@ -14,10 +14,11 @@ class MalAnimeSorter {
     this.lastHttpRequestTimestamp = 0
     this.filterType = 'SKIP'
     this.durationDisplayType = 'FORMATTED'
+    this.type = _type
   }
 
   init(callback, setShowOnlyWithWords, setSortBy, setSkipEntries, setFilterType, setDurationDisplayStyle) {
-    const base = '://myanimelist.net/anime/'
+    const base = `://myanimelist.net/${this.type}/`
     const currentUrl = window.location.href
     if (currentUrl.includes(base)) {
       this.lastHttpRequestTimestamp = new Date().getTime()
@@ -128,27 +129,28 @@ class MalAnimeSorter {
   }
 
   async sortRelatedEntries(entry = '', childNodes = []) {
-    if (!entry.includes('/anime/')) {
+    const type = this.type
+    if (!entry.includes(`/${type}/`)) {
       return
     }
     if (childNodes.length === 0) {
-      const i = entry.indexOf('://myanimelist.net/anime/') + 25
+      const i = entry.indexOf(`://myanimelist.net/${type}/`) + 25
       const trimmed = entry.substring(i)
-      const animeId = Number(trimmed.substring(0, trimmed.indexOf('/')))
+      const entryId = Number(trimmed.substring(0, trimmed.indexOf('/')))
 
       const html = await this.getHtml(entry)
 
       const relatedNodes = html.querySelectorAll('.anime_detail_related_anime > tbody > tr >td > a')
-      const childIds = await this.processChild(relatedNodes, animeId)
-      this.process(html, animeId)
+      const childIds = await this.processChild(relatedNodes, entryId)
+      this.process(html, entryId)
       console.log(`Initial Recurse: "sortRelatedEntries(${entry}, ${childIds})"`)
-      await this.sortRelatedEntries('/anime/', childIds)
+      await this.sortRelatedEntries(`/${type}/`, childIds)
     } else {
-      const animeId = childNodes[0]
-      const html = await this.getHtml(`https://myanimelist.net/anime/${animeId}`)
+      const entryId = childNodes[0]
+      const html = await this.getHtml(`https://myanimelist.net/${type}/${entryId}`)
       const relatedNodes = html.querySelectorAll('.anime_detail_related_anime > tbody > tr >td > a')
-      const childIds = await this.processChild(relatedNodes, animeId)
-      this.process(html, animeId)
+      const childIds = await this.processChild(relatedNodes, entryId)
+      this.process(html, entryId)
       console.log(`Recurse: "sortRelatedEntries(${entry}, ${childNodes})"`)
       let newIdList = childNodes
       for (let i = 0; i < childIds.length; i++) {
@@ -161,7 +163,7 @@ class MalAnimeSorter {
       }
       newIdList = newIdList.slice(1)
       if (newIdList.length > 0) {
-        await this.sortRelatedEntries(`https://myanimelist.net/anime/${newIdList[0]}`, newIdList)
+        await this.sortRelatedEntries(`https://myanimelist.net/${type}/${newIdList[0]}`, newIdList)
       } else {
         let output = ''
         const sortedList = this.entryList.sort((a, b) => {
@@ -207,14 +209,15 @@ class MalAnimeSorter {
     if (relatedNodes.length === 0) {
       return childIds
     }
+    const type = this.type
     const node = relatedNodes[i]
     const shortUrl = node.getAttribute('href')
-    if (shortUrl.includes('/anime/')) {
-      const trimmed = shortUrl.replace('/anime/', '')
+    if (shortUrl.includes(`/${type}/`)) {
+      const trimmed = shortUrl.replace(`/${type}/`, '')
       const id = Number(trimmed.substring(0, trimmed.indexOf('/')))
       let skipped = true
       if (id && id !== 0 && !this.entries[id]) {
-        const response = await this.http.get(`https://myanimelist.net/anime/${id}`)
+        const response = await this.http.get(`https://myanimelist.net/${type}/${id}`)
         var doc = document.createElement('html')
         const result = await response.text()
         doc.innerHTML = result
@@ -237,7 +240,7 @@ class MalAnimeSorter {
             sortKey = 4133865600000
           }
           if (id && id !== 0 && !this.entries[id]) {
-            this.entries[id] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/anime/${id}`, status: this.getStatusHtml(doc, id) }
+            this.entries[id] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/${type}/${id}`, status: this.getStatusHtml(doc, id) }
             this.entryList.push(this.entries[id])
             this.renderHtml()
             console.log(`processChild: Entry added to list: ${id}`)
@@ -289,7 +292,7 @@ class MalAnimeSorter {
     return infoValue
   }
 
-  getStatusHtml(html, animeId) {
+  getStatusHtml(html, entryId) {
     const addElement = html.querySelector('#showAddtolistAnime')
     if (addElement) {
       return ''
@@ -327,7 +330,7 @@ class MalAnimeSorter {
     if (!statusStyle && !statusText) {
       return ''
     }
-    return `<a class="Lightbox_AddEdit button_edit ${statusStyle}" title="${statusText}" href="https://myanimelist.net/ownlist/anime/${animeId}/edit?hideLayout=1">${statusText}</a>`
+    return `<a class="Lightbox_AddEdit button_edit ${statusStyle}" title="${statusText}" href="https://myanimelist.net/ownlist/${this.type}/${entryId}/edit?hideLayout=1">${statusText}</a>`
   }
 
   isSkipped(title = '') {
@@ -356,7 +359,7 @@ class MalAnimeSorter {
     return !show
   }
 
-  process(html, animeId = 0) {
+  process(html, entryId = 0) {
     const entryTitle = html.querySelector('.title-name').textContent
     const skipped = this.isSkipped(entryTitle)
     if (skipped) {
@@ -366,7 +369,7 @@ class MalAnimeSorter {
     const entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', html)
     const entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', html))
     const totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
-    if (animeId && animeId !== 0 && !this.entries[animeId]) {
+    if (entryId && entryId !== 0 && !this.entries[entryId]) {
       const from = this.parseDate(dates.split(' to ')[0])
       const to = this.parseDate(dates.split(' to ')[1])
       let transformed = `${from} to ${to}`
@@ -378,10 +381,10 @@ class MalAnimeSorter {
       if (transformed === '---------- to ----------') {
         sortKey = 4133865600000
       }
-      this.entries[animeId] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/anime/${animeId}`, status: this.getStatusHtml(html, animeId) }
-      this.entryList.push(this.entries[animeId])
+      this.entries[entryId] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/${this.type}/${entryId}`, status: this.getStatusHtml(html, entryId) }
+      this.entryList.push(this.entries[entryId])
       this.renderHtml()
-      console.log(`process: Entry added to list: ${animeId}`)
+      console.log(`process: Entry added to list: ${entryId}`)
     }
   }
 
@@ -528,10 +531,9 @@ class MalAnimeSorter {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-function startModuleRelatedEntries() {
+function startModuleAnimeRelatedEntries() {
   // eslint-disable-next-line no-undef
-  const sorter = new MalAnimeSorter(true)
+  const sorter = new MalAnimeSorter('anime')
   sorter.init(function (url) {
     sorter.sortRelatedEntries(url)
   }, function (words = []) {
@@ -545,4 +547,35 @@ function startModuleRelatedEntries() {
   }, function (durationDisplayType = 'FORMATTED') {
     sorter.setDurationDisplayStyle(durationDisplayType)
   })
+}
+
+function startModuleMangaRelatedEntries() {
+  // eslint-disable-next-line no-undef
+  const sorter = new MalAnimeSorter('manga')
+  sorter.init(function (url) {
+    sorter.sortRelatedEntries(url)
+  }, function (words = []) {
+    sorter.setShowOnlyWithWords(words)
+  }, function (sortBy = '') {
+    sorter.setSortBy(sortBy)
+  }, function (skipEntries = []) {
+    sorter.setSkipEntries(skipEntries)
+  }, function (filterType = '') {
+    sorter.setFilterType(filterType)
+  }, function (durationDisplayType = 'FORMATTED') {
+    sorter.setDurationDisplayStyle(durationDisplayType)
+  })
+}
+
+// eslint-disable-next-line no-unused-vars
+function startModuleRelatedEntries() {
+  // eslint-disable-next-line no-undef, no-new
+  new Bootstrapper(['://myanimelist.net/anime/'], 'ModuleAnimeRelatedEntries', function () {
+    startModuleAnimeRelatedEntries()
+  }).start()
+
+  // eslint-disable-next-line no-undef, no-new
+  new Bootstrapper(['://myanimelist.net/manga/'], 'ModuleMangaRelatedEntries', function () {
+    startModuleMangaRelatedEntries()
+  }).start()
 }
