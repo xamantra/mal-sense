@@ -1,0 +1,23 @@
+{
+  "name": "mal-sense",
+  "version": "1.0.0",
+  "description": "A MyAnimeList script for extending the website's functionality and features.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "myanimelist.net",
+    "mal"
+  ],
+  "author": "xamantra",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  }
+}
