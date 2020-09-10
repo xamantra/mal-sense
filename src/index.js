@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name         MAL Sense
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  A MyAnimeList script for extending the website's functionality and features.
 // @author       xamantra
 // @match        https://myanimelist.net/*
-// @updateURL    TODO
-// @downloadURL  TODO
-// @supportURL   TODO
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.0/src/core.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.0/src/http.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.0/src/date.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.0/src/modules/related-entries.js
+// @updateURL    https://raw.githubusercontent.com/xamantra/mal-sense/master/src/index.js
+// @downloadURL  https://raw.githubusercontent.com/xamantra/mal-sense/master/src/index.js
+// @supportURL   https://github.com/xamantra/mal-sense/issues
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.1/src/core.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.1/src/http.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.1/src/date.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.0.1/src/modules/related-entries.js
 // @grant        none
 // ==/UserScript==
 
