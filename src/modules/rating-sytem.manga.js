@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-class RatingSystem {
+class MangaRatingSystem {
   static getOwnUsername() {
     const base = '://myanimelist.net/profile/'
     const tabUrl = window.location.href
@@ -17,11 +17,11 @@ class RatingSystem {
   }
 
   static fieldIdPrefix() {
-    return `malextsa_${RatingSystem.getOwnUsername()}_field_`
+    return `malextsa_${MangaRatingSystem.getOwnUsername()}_manga_field_`
   }
 
   static fieldIdAddScorePrefix() {
-    return `malextsa_${RatingSystem.getOwnUsername()}_add_anime_score_`
+    return `malextsa_${MangaRatingSystem.getOwnUsername()}_add_manga_score_`
   }
 
   static overallScoreLabel() {
@@ -29,7 +29,7 @@ class RatingSystem {
   }
 
   static fieldSettingsListKey() {
-    return `malextsa_${RatingSystem.getOwnUsername()}_field_settings_list_key`
+    return `malextsa_${MangaRatingSystem.getOwnUsername()}_manga_field_settings_list_key`
   }
 
   static async sleep(timeout = 1000) {
@@ -60,33 +60,33 @@ class RatingSystem {
     console.log(`(${sum} / ${count}).toFixed(2)`)
     if (isNaN(average)) {
       if (appendElement) {
-        $(`#${RatingSystem.overallScoreLabel()}`).text('Overall')
+        $(`#${MangaRatingSystem.overallScoreLabel()}`).text('Overall')
       }
     } else {
       if (appendElement) {
-        $(`#${RatingSystem.overallScoreLabel()}`).text(`Overall (${average})`)
+        $(`#${MangaRatingSystem.overallScoreLabel()}`).text(`Overall (${average})`)
       }
     }
     return average
   }
 
   static getDefaultFields() {
-    var ratingSystemFields = ['Story', 'Art', 'Sound', 'Characters', 'Enjoyment']
+    var ratingSystemFields = ['Story', 'Art', 'Characters', 'Enjoyment']
     return ratingSystemFields
   }
 
   static initializeFieldSettingsData() {
-    const base = '://myanimelist.net/animelist/'
+    const base = '://myanimelist.net/mangalist/'
     const tabUrl = window.location.href
     if (tabUrl.includes(base)) {
       return undefined
     }
-    var ratingSystemFields = RatingSystem.getDefaultFields()
-    var existingData = localStorage.getItem(RatingSystem.fieldSettingsListKey())
+    var ratingSystemFields = MangaRatingSystem.getDefaultFields()
+    var existingData = localStorage.getItem(MangaRatingSystem.fieldSettingsListKey())
     if (existingData) {
       ratingSystemFields = JSON.parse(existingData)
     } else {
-      localStorage.setItem(RatingSystem.fieldSettingsListKey(), JSON.stringify(ratingSystemFields))
+      localStorage.setItem(MangaRatingSystem.fieldSettingsListKey(), JSON.stringify(ratingSystemFields))
     }
     return ratingSystemFields
   }
@@ -94,25 +94,25 @@ class RatingSystem {
   static getRatingCategoryEditValues() {
     const result = ['']
     result.pop()
-    $('.anime_rating_category_name').each(function () {
+    $('.manga_rating_category_name').each(function () {
       result.push($(this).text())
     })
     return result
   }
 
   static saveRatingFields(data = []) {
-    localStorage.setItem(RatingSystem.fieldSettingsListKey(), JSON.stringify(data))
+    localStorage.setItem(MangaRatingSystem.fieldSettingsListKey(), JSON.stringify(data))
   }
 
   static generateHTMLForRatingFields(data = []) {
     var html = ''
     for (let i = 0; i < data.length; i++) {
-      var id = `${RatingSystem.fieldIdPrefix()}${data[i]}`
+      var id = `${MangaRatingSystem.fieldIdPrefix()}${data[i]}`
       html += `<li class="draggable_list">
                       <span class="float_right">
                           <a class="lightLink" id="${id}"><small>Remove</small></a>
                       </span>
-                      <em class="anime_rating_category_name">${data[i]}</em>
+                      <em class="manga_rating_category_name">${data[i]}</em>
                   </li>`
     }
     return html
@@ -125,11 +125,11 @@ class RatingSystem {
       console.log('Inserting Rating System Settings into view.')
       var settingsData = initialData
       if (!settingsData) {
-        settingsData = RatingSystem.initializeFieldSettingsData()
+        settingsData = MangaRatingSystem.initializeFieldSettingsData()
       }
-      var settingsHtml = RatingSystem.generateHTMLForRatingFields(settingsData)
-      $('#rating_system_settings').remove()
-      var html = `<tr id="rating_system_settings">
+      var settingsHtml = MangaRatingSystem.generateHTMLForRatingFields(settingsData)
+      $('#manga_rating_system_settings').remove()
+      var html = `<tr id="manga_rating_system_settings">
       <td valign="top">Rating System</td>
       <td>
           <table width="300px">
@@ -139,93 +139,93 @@ class RatingSystem {
                   </tr>
                   <tr>
                       <td>
-                      <ul id="anime_rating_category_list" class="draggable_list ui-sortable">
+                      <ul id="manga_rating_category_list" class="draggable_list ui-sortable">
                           ${settingsHtml}
                       </ul>
-                          <button style="margin-top: 16px" id="mal_score_assist_add_new_field_button"
-                              name="mal_score_assist_add_new_field_button" type="button">Add New</button>
-                              <button style="margin-top: 16px" id="mal_score_assist_save_field_button"
-                              name="mal_score_assist_save_field_button" type="button">Save</button>
-                              <button style="margin-top: 16px" id="mal_score_assist_reset_field_button"
-                              name="mal_score_assist_reset_field_button" type="button">Set Defaults</button>
+                          <button style="margin-top: 16px" id="mal_score_assist_manga_add_new_field_button"
+                              name="mal_score_assist_manga_add_new_field_button" type="button">Add New</button>
+                              <button style="margin-top: 16px" id="mal_score_assist_manga_save_field_button"
+                              name="mal_score_assist_manga_save_field_button" type="button">Save</button>
+                              <button style="margin-top: 16px" id="mal_score_assist_manga_reset_field_button"
+                              name="mal_score_assist_manga_reset_field_button" type="button">Set Defaults</button>
                       </td>
                   </tr>
               </tbody>
           </table>
       </td>
   </tr>`
-      $(html).insertAfter('#content > div:nth-child(2) > form > table > tbody > tr:nth-child(9)')
+      $(html).insertBefore($('#sns-setting-manga').parent().parent())
       $(function () {
-        $('#anime_rating_category_list').sortable()
-        $('#anime_rating_category_list').disableSelection()
+        $('#manga_rating_category_list').sortable()
+        $('#manga_rating_category_list').disableSelection()
       })
       for (let i = 0; i < settingsData.length; i++) {
         const name = settingsData[i]
-        const id = `${RatingSystem.fieldIdPrefix()}${name}`
+        const id = `${MangaRatingSystem.fieldIdPrefix()}${name}`
         $(`#${id}`).on('click', function () {
           $(this).parent().parent().remove()
         })
       }
-      $('#mal_score_assist_add_new_field_button').on('click', function () {
+      $('#mal_score_assist_manga_add_new_field_button').on('click', function () {
         var name = prompt('Rating Field Name')
         if (name) {
-          settingsData = RatingSystem.initializeFieldSettingsData()
+          settingsData = MangaRatingSystem.initializeFieldSettingsData()
           var check = settingsData.map(function (n) { return n.toLowerCase() })
           if (check.includes(name)) {
             alert(`The rating category item "${name}" already exists.`)
             return
           }
           name = name.replace(/[^a-zA-Z0-9]/g, '_')
-          var id = `${RatingSystem.fieldIdPrefix()}${name}`
+          var id = `${MangaRatingSystem.fieldIdPrefix()}${name}`
           const newCategoryHtml = `<li class="draggable_list">
                                               <span class="float_right">
                                                   <a class="lightLink" id="${id}"><small>Remove</small></a>
                                               </span>
-                                              <em class="anime_rating_category_name">${name}</em>
+                                              <em class="manga_rating_category_name">${name}</em>
                                           </li>`
-          $('#anime_rating_category_list').append(newCategoryHtml)
+          $('#manga_rating_category_list').append(newCategoryHtml)
           $(`#${id}`).on('click', function () {
             $(this).parent().parent().remove()
           })
         }
       })
-      $('#mal_score_assist_reset_field_button').on('click', function () {
-        settingsData = RatingSystem.getDefaultFields()
-        RatingSystem.insertRatingSystemSettings(settingsData)
+      $('#mal_score_assist_manga_reset_field_button').on('click', function () {
+        settingsData = MangaRatingSystem.getDefaultFields()
+        MangaRatingSystem.insertRatingSystemSettings(settingsData)
       })
-      $('#mal_score_assist_save_field_button').on('click', function () {
-        const newCategories = RatingSystem.getRatingCategoryEditValues()
-        RatingSystem.saveRatingFields(newCategories)
+      $('#mal_score_assist_manga_save_field_button').on('click', function () {
+        const newCategories = MangaRatingSystem.getRatingCategoryEditValues()
+        MangaRatingSystem.saveRatingFields(newCategories)
       })
     }
   }
 
   static inputRatings(ratings = '', overall = '') {
     let tags = ''
-    tags = $('#add_anime_tags').val()
+    tags = $('#add_manga_tags').val()
     if (tags.includes('Score: ')) {
       const s = tags.split(',')
       tags = s.slice(1, s.length).join(',').trim()
     }
     if (overall !== '0') {
       const newTags = [`Score: ${overall}`, tags].join(',')
-      $('#add_anime_tags').val(newTags)
+      $('#add_manga_tags').val(newTags)
     }
 
     let comments = ''
-    comments = $('#add_anime_comments').val()
+    comments = $('#add_manga_comments').val()
     if (comments.includes('<scores>')) {
       const index = comments.lastIndexOf('</scores>') + 10
       comments = comments.substring(index, comments.length).trim()
     }
     const newComments = [`-\n${ratings}`, comments].join('\n')
-    $('#add_anime_comments').val(newComments)
+    $('#add_manga_comments').val(newComments)
   }
 
   static getFieldsScore() {
     let comments = ''
     const fields = this.initializeFieldSettingsData()
-    comments = $('#add_anime_comments').val()
+    comments = $('#add_manga_comments').val()
     const start = comments.indexOf('<scores>') + 9
     const end = comments.indexOf('</scores>')
     const rawScores = comments.substring(start, end)
@@ -244,18 +244,18 @@ class RatingSystem {
   }
 
   static cleanInputs() {
-    const currentTags = $('#add_anime_tags').val()
-    const currentComments = $('#add_anime_comments').val()
+    const currentTags = $('#add_manga_tags').val()
+    const currentComments = $('#add_manga_comments').val()
 
     if (currentTags.includes('Score: ')) {
       const removeTag = currentTags.substr(0, 12)
-      $('#add_anime_tags').val(currentTags.replace(removeTag, '').trim())
+      $('#add_manga_tags').val(currentTags.replace(removeTag, '').trim())
     }
 
     const index = currentComments.lastIndexOf('</scores>') + 10
     if (index > -1) {
       const removeComment = currentComments.substring(0, index)
-      $('#add_anime_comments').val(currentComments.replace(removeComment, '').trim())
+      $('#add_manga_comments').val(currentComments.replace(removeComment, '').trim())
     }
   }
 
@@ -284,16 +284,16 @@ class RatingSystem {
   }
 
   static async insertScoreAssist() {
-    var unsecure = window.location.href.indexOf('http://myanimelist.net/ownlist/anime')
-    var secure = window.location.href.indexOf('https://myanimelist.net/ownlist/anime')
+    var unsecure = window.location.href.indexOf('http://myanimelist.net/ownlist/manga')
+    var secure = window.location.href.indexOf('https://myanimelist.net/ownlist/manga')
     if (unsecure === 0 || secure === 0) {
       var total = 0
-      var ratings = RatingSystem.getFieldsScore()
+      var ratings = MangaRatingSystem.getFieldsScore()
       var ratingsFormatted = []
 
       console.log('Inserting Score Assist into view.')
       $('#main-form > table:nth-child(1) > tbody > tr:nth-child(4) > td:nth-child(1)').text('Overall')
-      $('#main-form > table:nth-child(1) > tbody > tr:nth-child(4) > td:nth-child(1)').attr('id', RatingSystem.overallScoreLabel())
+      $('#main-form > table:nth-child(1) > tbody > tr:nth-child(4) > td:nth-child(1)').attr('id', MangaRatingSystem.overallScoreLabel())
 
       $('#top-submit-buttons > input').on('click', async function () {
         for (let i = 0; i < ratings.length; i++) {
@@ -301,10 +301,10 @@ class RatingSystem {
           ratingsFormatted.push(rating)
         }
 
-        ratingsFormatted = RatingSystem.formatRating(ratings)
-        total = RatingSystem.calculate(ratings)
-        RatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
-        await RatingSystem.sleep(200)
+        ratingsFormatted = MangaRatingSystem.formatRating(ratings)
+        total = MangaRatingSystem.calculate(ratings)
+        MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
+        await MangaRatingSystem.sleep(200)
         $('#main-form').submit()
       })
 
@@ -314,23 +314,23 @@ class RatingSystem {
           ratingsFormatted.push(rating)
         }
 
-        ratingsFormatted = RatingSystem.formatRating(ratings)
-        total = RatingSystem.calculate(ratings)
-        RatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
-        await RatingSystem.sleep(200)
+        ratingsFormatted = MangaRatingSystem.formatRating(ratings)
+        total = MangaRatingSystem.calculate(ratings)
+        MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
+        await MangaRatingSystem.sleep(200)
         $('#main-form').submit()
       })
 
-      var fields = RatingSystem.initializeFieldSettingsData()
+      var fields = MangaRatingSystem.initializeFieldSettingsData()
       var html = ''
-      const data = RatingSystem.getFieldsScore()
+      const data = MangaRatingSystem.getFieldsScore()
       console.log(data)
       if (data) {
-        RatingSystem.calculate(data)
+        MangaRatingSystem.calculate(data)
       }
       for (let i = 0; i < fields.length; i++) {
         const field = fields[i]
-        const id = `${RatingSystem.fieldIdAddScorePrefix()}${field}`
+        const id = `${MangaRatingSystem.fieldIdAddScorePrefix()}${field}`
         var selectedRating
         if (data) {
           const selected = data.find((d) => {
@@ -370,7 +370,7 @@ class RatingSystem {
         const existing = ratings.findIndex((e) => {
           return e.includes(`${field}:`)
         })
-        var r = RatingSystem.getFieldRating(data, field)
+        var r = MangaRatingSystem.getFieldRating(data, field)
         if (r) {
           if (existing >= 0) {
             ratings[existing] = r
@@ -378,7 +378,7 @@ class RatingSystem {
             ratings.push(r)
           }
         }
-        const id = `${RatingSystem.fieldIdAddScorePrefix()}${field}`
+        const id = `${MangaRatingSystem.fieldIdAddScorePrefix()}${field}`
         $(`#${id}`).change(function () {
           var rate
           if (this.value) {
@@ -388,12 +388,12 @@ class RatingSystem {
           }
           console.log(`${field} Score: "${rate}"`)
           ratings[i] = `${field}: ${rate}`
-          total = RatingSystem.calculate(ratings)
+          total = MangaRatingSystem.calculate(ratings)
           console.log(`Overall: "${total}"`)
-          $('#add_anime_score').val(`${Math.round(total)}`)
+          $('#add_manga_score').val(`${Math.round(total)}`)
         })
       }
-      $('#add_anime_score').on('change', function () {
+      $('#add_manga_score').on('change', function () {
         for (let i = 0; i < fields.length; i++) {
           var rate
           if (this.value) {
@@ -402,9 +402,9 @@ class RatingSystem {
             rate = '0'
           }
           const field = fields[i]
-          const id = `${RatingSystem.fieldIdAddScorePrefix()}${field}`
+          const id = `${MangaRatingSystem.fieldIdAddScorePrefix()}${field}`
           ratings[i] = `${field}: ${rate}`
-          total = RatingSystem.calculate(ratings)
+          total = MangaRatingSystem.calculate(ratings)
           $(`#${id}`).val(`${rate}`)
         }
         console.log(`Edit Overall: "${rate}"`)
@@ -414,4 +414,12 @@ class RatingSystem {
       this.cleanInputs()
     }
   }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function startModuleMangaRatingAssistant() {
+  // await MangaRateAssist.sleep(2000);
+  MangaRatingSystem.initializeFieldSettingsData()
+  MangaRatingSystem.insertScoreAssist()
+  MangaRatingSystem.insertRatingSystemSettings()
 }
