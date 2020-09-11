@@ -229,21 +229,23 @@ class MalAnimeSorter {
         }
         skipped = this.isSkipped(entryTitle)
         if (!skipped) {
-          const entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', doc)
+          let entryEpisodes = ''
           let dates
           let entryDuration = ''
+          let totalDuration = ''
           let chapters = ''
           let volumes = ''
           if (this.type === 'anime') {
+            entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', doc)
             entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', doc))
+            totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
             dates = MalAnimeSorter.getInfoValue('Aired', doc)
           } else if (this.type === 'manga') {
-            chapters = this.formatDuration(MalAnimeSorter.getInfoValue('Chapters', doc))
-            volumes = this.formatDuration(MalAnimeSorter.getInfoValue('Volumes', doc))
+            chapters = Number(MalAnimeSorter.getInfoValue('Chapters', doc))
+            volumes = Number(MalAnimeSorter.getInfoValue('Volumes', doc))
             entryDuration = `${chapters}ch./${volumes}vol.`
             dates = MalAnimeSorter.getInfoValue('Published', doc)
           }
-          const totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
           const from = this.parseDate(dates.split(' to ')[0])
           const to = this.parseDate(dates.split(' to ')[1])
           let transformed = `${from} to ${to}`
@@ -256,7 +258,7 @@ class MalAnimeSorter {
             sortKey = 4133865600000
           }
           if (id && id !== 0 && !this.entries[id]) {
-            this.entries[id] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/${type}/${id}`, status: this.getStatusHtml(doc, id) }
+            this.entries[id] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, volumes, sort_key: sortKey, url: `https://myanimelist.net/${type}/${id}`, status: this.getStatusHtml(doc, id) }
             this.entryList.push(this.entries[id])
             this.renderHtml()
             console.log(`processChild: Entry added to list: ${id}`)
@@ -309,7 +311,12 @@ class MalAnimeSorter {
   }
 
   getStatusHtml(html, entryId) {
-    const addElement = html.querySelector('#showAddtolistAnime')
+    let addElement
+    if (this.type === 'anime') {
+      addElement = html.querySelector('#showAddtolistAnime')
+    } else if (this.type === 'manga') {
+      addElement = html.querySelector('#showAddtolistManga')
+    }
     if (addElement) {
       return ''
     }
@@ -317,31 +324,60 @@ class MalAnimeSorter {
     const statusValue = Number(e.options[e.selectedIndex].value)
     let statusStyle = ''
     let statusText = ''
-    switch (statusValue) {
-      case 1:
-        statusStyle = 'watching'
-        statusText = 'Watching'
-        break
-      case 2:
-        statusStyle = 'completed'
-        statusText = 'Completed'
-        break
-      case 3:
-        statusStyle = 'on-hold'
-        statusText = 'On-Hold'
-        break
-      case 4:
-        statusStyle = 'dropped'
-        statusText = 'Dropped'
-        break
-      case 6:
-        statusStyle = 'plan-to-watch'
-        statusText = 'Plan to Watch'
-        break
-      default:
-        statusStyle = undefined
-        statusText = undefined
-        break
+    if (this.type === 'anime') {
+      switch (statusValue) {
+        case 1:
+          statusStyle = 'watching'
+          statusText = 'Watching'
+          break
+        case 2:
+          statusStyle = 'completed'
+          statusText = 'Completed'
+          break
+        case 3:
+          statusStyle = 'on-hold'
+          statusText = 'On-Hold'
+          break
+        case 4:
+          statusStyle = 'dropped'
+          statusText = 'Dropped'
+          break
+        case 6:
+          statusStyle = 'plan-to-watch'
+          statusText = 'Plan to Watch'
+          break
+        default:
+          statusStyle = undefined
+          statusText = undefined
+          break
+      }
+    } else if (this.type === 'manga') {
+      switch (statusValue) {
+        case 1:
+          statusStyle = 'reading'
+          statusText = 'Reading'
+          break
+        case 2:
+          statusStyle = 'completed'
+          statusText = 'Completed'
+          break
+        case 3:
+          statusStyle = 'on-hold'
+          statusText = 'On-Hold'
+          break
+        case 4:
+          statusStyle = 'dropped'
+          statusText = 'Dropped'
+          break
+        case 6:
+          statusStyle = 'plan-to-read'
+          statusText = 'Plan to Read'
+          break
+        default:
+          statusStyle = undefined
+          statusText = undefined
+          break
+      }
     }
     if (!statusStyle && !statusText) {
       return ''
@@ -386,10 +422,23 @@ class MalAnimeSorter {
     if (skipped) {
       return
     }
-    const dates = MalAnimeSorter.getInfoValue('Aired', html)
-    const entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', html)
-    const entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', html))
-    const totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
+    let entryEpisodes = ''
+    let dates
+    let entryDuration = ''
+    let totalDuration = ''
+    let chapters = ''
+    let volumes = ''
+    if (this.type === 'anime') {
+      entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', html)
+      entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', html))
+      totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
+      dates = MalAnimeSorter.getInfoValue('Aired', html)
+    } else if (this.type === 'manga') {
+      chapters = Number(MalAnimeSorter.getInfoValue('Chapters', html))
+      volumes = Number(MalAnimeSorter.getInfoValue('Volumes', html))
+      entryDuration = `${chapters}ch./${volumes}vol.`
+      dates = MalAnimeSorter.getInfoValue('Published', html)
+    }
     if (entryId && entryId !== 0 && !this.entries[entryId]) {
       const from = this.parseDate(dates.split(' to ')[0])
       const to = this.parseDate(dates.split(' to ')[1])
@@ -402,7 +451,7 @@ class MalAnimeSorter {
       if (transformed === '---------- to ----------') {
         sortKey = 4133865600000
       }
-      this.entries[entryId] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, sort_key: sortKey, url: `https://myanimelist.net/${this.type}/${entryId}`, status: this.getStatusHtml(html, entryId) }
+      this.entries[entryId] = { air_dates: transformed, entryTitle, entryDuration, totalDuration, entryEpisodes, volumes, sort_key: sortKey, url: `https://myanimelist.net/${this.type}/${entryId}`, status: this.getStatusHtml(html, entryId) }
       this.entryList.push(this.entries[entryId])
       this.renderHtml()
       console.log(`process: Entry added to list: ${entryId}`)
@@ -448,18 +497,34 @@ class MalAnimeSorter {
     $('#scanned_related_anime').remove()
     let list = ''
     const sortedList = this.entryList.sort((a, b) => {
-      if (this.sortBy === 'Name') {
-        if (a.entryTitle < b.entryTitle) return -1
-        if (a.entryTitle > b.entryTitle) return 1
-        return 0
-      } else if (this.sortBy === 'Release Dates') {
-        if (a.sort_key > b.sort_key) return 1
-        if (a.sort_key < b.sort_key) return -1
-        return 0
-      } else if (this.sortBy === 'Duration') {
-        if (a.totalDuration > b.totalDuration) return 1
-        if (a.totalDuration < b.totalDuration) return -1
-        return 0
+      if (this.type === 'anime') {
+        if (this.sortBy === 'Name') {
+          if (a.entryTitle < b.entryTitle) return -1
+          if (a.entryTitle > b.entryTitle) return 1
+          return 0
+        } else if (this.sortBy === 'Release Dates') {
+          if (a.sort_key > b.sort_key) return 1
+          if (a.sort_key < b.sort_key) return -1
+          return 0
+        } else if (this.sortBy === 'Duration') {
+          if (a.totalDuration > b.totalDuration) return 1
+          if (a.totalDuration < b.totalDuration) return -1
+          return 0
+        }
+      } else if (this.type === 'manga') {
+        if (this.sortBy === 'Name') {
+          if (a.entryTitle < b.entryTitle) return -1
+          if (a.entryTitle > b.entryTitle) return 1
+          return 0
+        } else if (this.sortBy === 'Release Dates') {
+          if (a.sort_key > b.sort_key) return 1
+          if (a.sort_key < b.sort_key) return -1
+          return 0
+        } else if (this.sortBy === 'Duration') {
+          if (a.volumes > b.volumes) return 1
+          if (a.volumes < b.volumes) return -1
+          return 0
+        }
       }
     })
     let showedCount = 0
