@@ -1,6 +1,6 @@
 {
   "name": "mal-sense",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A MyAnimeList script for extending the website's functionality and features.",
   "main": "src/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "eslint": "^7.8.1",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-node": "^11.1.1",
+    "eslint-plugin-node": "^11.1.2",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1"
   }

@@ -244,6 +244,17 @@ class MalAnimeSorter {
             chapters = Number(MalAnimeSorter.getInfoValue('Chapters', doc))
             volumes = Number(MalAnimeSorter.getInfoValue('Volumes', doc))
             entryDuration = `${chapters}ch./${volumes}vol.`
+            if (isNaN(volumes)) {
+              volumes = 9999999
+            }
+            if (isNaN(chapters)) {
+              chapters = 0
+            }
+            entryDuration = entryDuration.replace('NaNch.', '')
+            entryDuration = entryDuration.replace('NaNvol.', '')
+            if (entryDuration === '/') {
+              entryDuration = 'Unknown'
+            }
             dates = MalAnimeSorter.getInfoValue('Published', doc)
           }
           const from = this.parseDate(dates.split(' to ')[0])
@@ -437,6 +448,17 @@ class MalAnimeSorter {
       chapters = Number(MalAnimeSorter.getInfoValue('Chapters', html))
       volumes = Number(MalAnimeSorter.getInfoValue('Volumes', html))
       entryDuration = `${chapters}ch./${volumes}vol.`
+      if (isNaN(volumes)) {
+        volumes = 9999999
+      }
+      if (isNaN(chapters)) {
+        chapters = 0
+      }
+      entryDuration = entryDuration.replace('NaNch.', '')
+      entryDuration = entryDuration.replace('NaNvol.', '')
+      if (entryDuration === '/') {
+        entryDuration = 'Unknown'
+      }
       dates = MalAnimeSorter.getInfoValue('Published', html)
     }
     if (entryId && entryId !== 0 && !this.entries[entryId]) {
