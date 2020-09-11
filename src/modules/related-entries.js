@@ -221,7 +221,12 @@ class MalAnimeSorter {
         var doc = document.createElement('html')
         const result = await response.text()
         doc.innerHTML = result
-        const entryTitle = doc.querySelector('.title-name').textContent
+        let entryTitle = ''
+        if (this.type === 'anime') {
+          entryTitle = doc.querySelector('.title-name').textContent
+        } else if (this.type === 'manga') {
+          entryTitle = doc.querySelector('.h1-title > span').textContent
+        }
         skipped = this.isSkipped(entryTitle)
         if (!skipped) {
           const dates = MalAnimeSorter.getInfoValue('Aired', doc)
@@ -360,7 +365,12 @@ class MalAnimeSorter {
   }
 
   process(html, entryId = 0) {
-    const entryTitle = html.querySelector('.title-name').textContent
+    let entryTitle = ''
+    if (this.type === 'anime') {
+      entryTitle = html.querySelector('.title-name').textContent
+    } else if (this.type === 'manga') {
+      entryTitle = html.querySelector('.h1-title > span').textContent
+    }
     const skipped = this.isSkipped(entryTitle)
     if (skipped) {
       return
