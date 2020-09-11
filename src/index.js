@@ -1,20 +1,21 @@
 // ==UserScript==
 // @name         MAL Sense
 // @namespace    http://tampermonkey.net/
-// @version      1.1.4
+// @version      1.1.5
 // @description  A MyAnimeList script for extending the website's functionality and features.
 // @author       xamantra
 // @match        https://myanimelist.net/*
 // @updateURL    https://raw.githubusercontent.com/xamantra/mal-sense/master/src/index.js
 // @downloadURL  https://raw.githubusercontent.com/xamantra/mal-sense/master/src/index.js
 // @supportURL   https://github.com/xamantra/mal-sense/issues
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/core.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/http.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/date.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/bootstrapper.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/modules/related-entries.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/modules/rating-sytem.anime.js
-// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.4/src/modules/rating-sytem.manga.js
+// @require      https://code.jquery.com/ui/1.12.1/jquery-ui.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/core.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/http.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/date.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/bootstrapper.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/modules/related-entries.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/modules/rating-sytem.anime.js
+// @require      https://raw.githubusercontent.com/xamantra/mal-sense/1.1.5/src/modules/rating-sytem.manga.js
 // @grant        none
 // ==/UserScript==
 
