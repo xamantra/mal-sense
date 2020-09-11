@@ -22,6 +22,22 @@ class MalAnimeSorter {
     const currentUrl = window.location.href
     if (currentUrl.includes(base)) {
       this.lastHttpRequestTimestamp = new Date().getTime()
+      let durationSort = ''
+      let durationLabel = ''
+      if (this.type === 'anime') {
+        durationSort = `<tr>
+                          <td><label>Duration display type:</label></td>
+                          <td>
+                            <select name="duration_display_type" id="duration_display_type">
+                              <option value="FORMATTED">Default</option>
+                              <option value="CALCULATED">Total Duration</option>
+                            </select>
+                          </td>
+                        </tr>`
+        durationLabel = 'Duration'
+      } else if (this.type === 'manga') {
+        durationLabel = 'Length'
+      }
       $(`<table style="margin-top: 8px;">
                 <tbody>
                   <tr>
@@ -39,19 +55,11 @@ class MalAnimeSorter {
                       <select name="scan_settings_sort_by" id="scan_settings_sort_by">
                         <option value="Release Dates">Release Dates</option>
                         <option value="Name">Entry Name</option>
-                        <option value="Duration">Duration</option>
+                        <option value="Duration">${durationLabel}</option>
                       </select>
                     </td>
                   </tr>
-                  <tr>
-                  <td><label>Duration display type:</label></td>
-                  <td>
-                    <select name="duration_display_type" id="duration_display_type">
-                      <option value="FORMATTED">Default</option>
-                      <option value="CALCULATED">Total Duration</option>
-                    </select>
-                  </td>
-                  </tr>
+                  ${durationSort}
                   <tr>
                     <td><label>Show only entries with words:</label></td>
                     <td><textarea type="text" id="scan_settings_show_only_words" rows=1 cols=30></textarea></td>
@@ -606,6 +614,12 @@ class MalAnimeSorter {
     }
     let hiddenCount = sortedList.length - showedCount
     hiddenCount = hiddenCount < 0 ? 0 : hiddenCount
+    let durationLabel = ''
+    if (this.type === 'anime') {
+      durationLabel = 'Duration'
+    } else if (this.type === 'manga') {
+      durationLabel = 'Length'
+    }
     const html = `<div id="scanned_related_anime" style="margin-top: 16px">
                   <table>
                     <tbody>
@@ -620,7 +634,7 @@ class MalAnimeSorter {
                       <tr>
                         <th>Release Date</th>
                         <th>Entry Name</th>
-                        <th>Duration</th>
+                        <th>${durationLabel}</th>
                       </tr>
                     </thead>
                     <tbody>
