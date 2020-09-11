@@ -229,9 +229,20 @@ class MalAnimeSorter {
         }
         skipped = this.isSkipped(entryTitle)
         if (!skipped) {
-          const dates = MalAnimeSorter.getInfoValue('Aired', doc)
           const entryEpisodes = MalAnimeSorter.getInfoValue('Episodes', doc)
-          const entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', doc))
+          let dates
+          let entryDuration = ''
+          let chapters = ''
+          let volumes = ''
+          if (this.type === 'anime') {
+            entryDuration = this.formatDuration(MalAnimeSorter.getInfoValue('Duration', doc))
+            dates = MalAnimeSorter.getInfoValue('Aired', doc)
+          } else if (this.type === 'manga') {
+            chapters = this.formatDuration(MalAnimeSorter.getInfoValue('Chapters', doc))
+            volumes = this.formatDuration(MalAnimeSorter.getInfoValue('Volumes', doc))
+            entryDuration = `${chapters}ch./${volumes}vol.`
+            dates = MalAnimeSorter.getInfoValue('Published', doc)
+          }
           const totalDuration = this.getTotalEntryDuration(entryEpisodes, entryDuration)
           const from = this.parseDate(dates.split(' to ')[0])
           const to = this.parseDate(dates.split(' to ')[1])
@@ -479,10 +490,14 @@ class MalAnimeSorter {
       if (show) {
         let duration = `(${entry.entryDuration})`
         let eps = ''
-        if (this.durationDisplayType === 'CALCULATED') {
-          duration = `${entry.totalDuration.toFixed(2)}h`
-        } else {
-          eps = `<strong>${entry.entryEpisodes}</strong> x `
+        if (this.type === 'anime') {
+          if (this.durationDisplayType === 'CALCULATED') {
+            duration = `${entry.totalDuration.toFixed(2)}h`
+          } else {
+            eps = `<strong>${entry.entryEpisodes}</strong> x `
+          }
+        } else if (this.type === 'manga') {
+          duration = entry.entryDuration
         }
         list += `<tr class="table-row">
                     <td style="white-space: nowrap; overflow: hidden width:80px; text-overflow: ellipsis;"><em>${entry.air_dates}</em></td>
