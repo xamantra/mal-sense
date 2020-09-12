@@ -207,7 +207,7 @@ class MangaRatingSystem {
       const s = tags.split(',')
       tags = s.slice(1, s.length).join(',').trim()
     }
-    if (overall !== '0') {
+    if (overall !== '0' && overall !== 'NaN') {
       const newTags = [`Score: ${overall}`, tags].join(',')
       $('#add_manga_tags').val(newTags)
     }
@@ -231,15 +231,26 @@ class MangaRatingSystem {
     const rawScores = comments.substring(start, end)
     const parsed = rawScores.split('\n').map((s) => { return s.replace('\n', '').trim() })
     const filtered = []
-    for (let i = 0; i < parsed.length; i++) {
-      const score = parsed[i]
-      if (score && score.replace('\n', '').trim() !== '') {
-        const f = score.split(':')[0].trim()
-        if (fields.includes(f)) {
-          filtered.push(score)
-        }
+    for (let i = 0; i < fields.length; i++) {
+      const f = fields[i].toLowerCase()
+      const r = parsed.findIndex((x) => {
+        const y = x.split(':')[0].trim().toLowerCase()
+        return y === f
+      })
+      if (r > -1) {
+        filtered.push(parsed[r])
       }
     }
+    // for (let i = 0; i < parsed.length; i++) {
+    //   const score = parsed[i]
+    //   if (score && score.replace('\n', '').trim() !== '') {
+    //     const f = score.split(':')[0].trim()
+    //     if (fields.includes(f)) {
+    //       filtered.push(score)
+    //     }
+    //   }
+    // }
+    console.log(filtered)
     return filtered
   }
 
@@ -277,7 +288,10 @@ class MangaRatingSystem {
       const defined = !rating.includes('undefined')
       const notNull = !rating.includes('null')
       if (defined && notNull) {
-        ratingsFormatted.push(rating.replace('\n', '').trim())
+        const r = rating.replace('\n', '').trim()
+        if (r.length > 0) {
+          ratingsFormatted.push(rating.replace('\n', '').trim())
+        }
       }
     }
     return ratingsFormatted
@@ -302,9 +316,11 @@ class MangaRatingSystem {
         }
 
         ratingsFormatted = MangaRatingSystem.formatRating(ratings)
-        total = MangaRatingSystem.calculate(ratings)
-        MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
-        await MangaRatingSystem.sleep(200)
+        if (ratingsFormatted.length > 0) {
+          total = MangaRatingSystem.calculate(ratings)
+          MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
+          await MangaRatingSystem.sleep(200)
+        }
         $('#main-form').submit()
       })
 
@@ -315,10 +331,12 @@ class MangaRatingSystem {
         }
 
         ratingsFormatted = MangaRatingSystem.formatRating(ratings)
-        total = MangaRatingSystem.calculate(ratings)
-        MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
-        await MangaRatingSystem.sleep(200)
-        $('#main-form').submit()
+        if (ratingsFormatted.length > 0) {
+          total = MangaRatingSystem.calculate(ratings)
+          MangaRatingSystem.inputRatings(`<scores>\n${ratingsFormatted.join('\n')}\n</scores>`, total.toString())
+          await MangaRatingSystem.sleep(200)
+          $('#main-form').submit()
+        }
       })
 
       var fields = MangaRatingSystem.initializeFieldSettingsData()

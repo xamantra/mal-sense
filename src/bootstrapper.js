@@ -3,7 +3,7 @@ class Bootstrapper {
   constructor(paths = [], name) {
     this._paths = paths
     this._name = name
-    this._version = '1.1.5'
+    this._version = '1.1.6'
   }
 
   start(callback) {
