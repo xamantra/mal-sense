@@ -289,7 +289,8 @@ class AnimeRatingSystem {
       const notNull = !rating.includes('null')
       if (defined && notNull) {
         const r = rating.replace('\n', '').trim()
-        if (r.length > 0) {
+        const s = r.split(': ')[1]
+        if (r.length > 0 && s !== '0') {
           ratingsFormatted.push(rating.replace('\n', '').trim())
         }
       }

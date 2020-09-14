@@ -1,6 +1,6 @@
 {
   "name": "mal-sense",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A MyAnimeList script for extending the website's functionality and features.",
   "main": "src/index.js",
   "scripts": {
